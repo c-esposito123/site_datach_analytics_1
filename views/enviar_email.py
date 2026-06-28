@@ -46,7 +46,13 @@ def render():
             if incluir_grafico and "ultimo_grafico_fig" in st.session_state:
                 imagem_bytes = fig_to_bytes(st.session_state["ultimo_grafico_fig"])
 
+        # --- Enviar o e-mail --- #
+            remetente = st.secrets['REMETENTE']
+            senha = st.secrets['SENHA']
+
             enviar_email(
+                remetente = remetente,
+                senha = senha,
                 destinatario=destinatario,
                 assunto=assunto,
                 corpo=corpo,

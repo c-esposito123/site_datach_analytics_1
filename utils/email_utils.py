@@ -19,10 +19,8 @@ def enviar_email(
     anexo_texto: str | None = None,
     anexo_texto_nome: str = "relatorio.txt",
 ):
-    """Envia um e-mail com imagem e/ou anexo de texto."""
-
-    servidor_smtp = "smtp.gmail.com"
-    porta_smtp = 587
+    smtp_server = 'smtp.gmail.com'
+    smtp_port = 587
 
     msg = MIMEMultipart()
     msg["From"] = remetente
@@ -31,48 +29,18 @@ def enviar_email(
 
     msg.attach(MIMEText(corpo, "plain", "utf-8"))
 
-    # Anexa imagem
     if imagem_bytes is not None:
-        try:
-            img = MIMEImage(imagem_bytes)
-            img.add_header(
-                "Content-Disposition",
-                "attachment",
-                filename=imagem_nome,
-            )
-            msg.attach(img)
-        except Exception as e:
-            st.error(f"Erro ao processar a imagem: {e}")
-            return False
+        img = MIMEImage(imagem_bytes, name=imagem_nome)
+        img.add_header("Content-Disposition", "attachment", filename=imagem_nome)
+        msg.attach(img)
 
-    # Anexa arquivo texto
     if anexo_texto is not None:
-        try:
-            anexo = MIMEApplication(
-                anexo_texto.encode("utf-8"),
-                Name=anexo_texto_nome,
-            )
-            anexo.add_header(
-                "Content-Disposition",
-                "attachment",
-                filename=anexo_texto_nome,
-            )
-            msg.attach(anexo)
-        except Exception as e:
-            st.error(f"Erro ao criar o anexo: {e}")
-            return False
+        anexo = MIMEApplication(anexo_texto.encode("utf-8"), Name=anexo_texto_nome)
+        anexo.add_header("Content-Disposition", "attachment", filename=anexo_texto_nome)
+        msg.attach(anexo)
 
-    # Envio do e-mail
-    try:
-        contexto = ssl.create_default_context()
-
-        with smtplib.SMTP(servidor_smtp, porta_smtp) as server:
-            server.starttls(context=contexto)
-            server.login(remetente, senha)
-            server.send_message(msg)
-
-        return True
-
-    except Exception as e:
-        st.error(f"Erro ao enviar o e-mail: {e}")
-        return False
+    contexto = ssl.create_default_context()
+    with smtplib.SMTP(smtp_server, smtp_port) as servidor:
+        servidor.starttls(context=contexto)
+        servidor.login(remetente, senha)
+        servidor.sendmail(remetente, destinatario, msg.as_string())
