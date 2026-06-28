@@ -2,7 +2,7 @@ import streamlit as st
 
 from utils.sidebar import menu
 
-from pages import (
+from views import (
     home,
     graficos,
     tabelas,
