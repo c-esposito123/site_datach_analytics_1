@@ -1,30 +1,53 @@
 import streamlit as st
 
-from utils.sidebar import menu
+NOME_EMPRESA = "DataCH Analytics"
 
-from pages import (
-    home,
-    graficos,
-    tabelas,
-    download_relatorio,
-    enviar_email,
-)
+PAGINAS = [
+    "🏠 Home",
+    "📈 Gráficos",
+    "📋 Tabelas",
+    "⬇️ Download Relatório",
+    "📧 Enviar Email",
+]
 
-st.set_page_config(page_title="DataCH Analytics", page_icon="📊", layout="wide")
 
-pagina = menu()
+def montar_sidebar():
+    """Monta o cabeçalho/configurações da barra lateral (nome do usuário, etc.)."""
+    st.sidebar.title("⚙️ Configurações")
 
-if pagina == "🏠 Home":
-    home.render()
+    if "nome_usuario" not in st.session_state:
+        st.session_state["nome_usuario"] = ""
 
-elif pagina == "📈 Gráficos":
-    graficos.render()
+    nome = st.sidebar.text_input(
+        "Seu nome",
+        value=st.session_state["nome_usuario"],
+        placeholder="Digite seu nome...",
+        key="input_nome_sidebar",
+    )
+    st.session_state["nome_usuario"] = nome
 
-elif pagina == "📋 Tabelas":
-    tabelas.render()
+    st.sidebar.markdown("---")
 
-elif pagina == "⬇️ Download Relatório":
-    download_relatorio.render()
 
-elif pagina == "📧 Enviar Email":
-    enviar_email.render()
+def menu() -> str:
+    """Renderiza o menu de navegação e devolve a página escolhida."""
+    st.sidebar.title("📊 Menu")
+
+    escolha = st.sidebar.radio("Navegação", PAGINAS, key="menu_navegacao")
+
+    montar_sidebar()
+
+    st.sidebar.caption(f"📊 {NOME_EMPRESA}")
+    st.sidebar.caption("Plataforma de Análise de Churn")
+
+    return escolha
+
+
+def saudacao():
+    nome = st.session_state.get("nome_usuario", "").strip()
+    if nome:
+        st.markdown(f"#### 👋 Olá, **{nome}**! Seja bem-vindo(a) de volta.")
+    else:
+        st.markdown("#### 👋 Olá! Que bom ter você aqui.")
+        st.caption("Dica: preencha seu nome na barra lateral para uma experiência personalizada.")
+    st.markdown("")
