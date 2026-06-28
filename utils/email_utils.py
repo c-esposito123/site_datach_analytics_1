@@ -18,8 +18,8 @@ def enviar_email(
     anexo_texto_nome: str = "relatorio.txt",
 ):
     try:
-        remetente = st.secrets["email"]["remetente"]
-        senha_app = st.secrets["email"]["senha_app"]
+        remetente = st.secrets['REMETENTE']
+        senha_app = st.secrets['SENHA']
         servidor_smtp = st.secrets["email"].get("servidor_smtp", "smtp.gmail.com")
         porta_smtp = int(st.secrets["email"].get("porta_smtp", 587))
     except Exception as exc:
