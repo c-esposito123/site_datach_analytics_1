@@ -13,11 +13,10 @@ def render():
         st.error("Arquivo `base_projeto.csv` não encontrado na raiz do projeto.")
         return
 
-    escolha = st.selectbox("Selecione o gráfico", list(GRAFICOS_DISPONIVEIS.keys()))
+    escolha = st.selectbox(
+        "Selecione o gráfico",
+        list(GRAFICOS_DISPONIVEIS.keys())
+    )
 
     fig = GRAFICOS_DISPONIVEIS[escolha](df)
     st.pyplot(fig)
-
-    # Guarda na sessão para reaproveitar na página de e-mail
-    st.session_state["ultimo_grafico_nome"] = escolha
-    st.session_state["ultimo_grafico_fig"] = fig

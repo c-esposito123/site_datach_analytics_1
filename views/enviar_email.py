@@ -4,6 +4,7 @@ from utils.charts import fig_to_bytes
 from utils.data import carregar_dados
 from utils.email_utils import enviar_email
 from utils.report import gerar_relatorio_insights
+from utils.charts import fig_to_bytes, GRAFICOS_DISPONIVEIS
 
 
 def render():
@@ -22,13 +23,14 @@ def render():
     )
 
     incluir_relatorio = st.checkbox("Anexar relatório de insights (.txt)", value=True)
-    incluir_grafico = st.checkbox(
-        "Anexar último gráfico gerado na página 📈 Gráficos", value=False
-    )
+    incluir_grafico = st.checkbox("Anexar gráfico", value=False)
 
-    if incluir_grafico and "ultimo_grafico_fig" not in st.session_state:
-        st.warning(
-            "Nenhum gráfico foi gerado ainda. Visite a página 📈 Gráficos antes de enviar."
+    grafico_escolhido = None
+
+    if incluir_grafico:
+        grafico_escolhido = st.selectbox(
+            "Selecione o gráfico que deseja anexar",
+            list(GRAFICOS_DISPONIVEIS.keys())
         )
 
     if st.button("✉️ Enviar e-mail", type="primary"):
@@ -43,8 +45,11 @@ def render():
                 anexo_texto = gerar_relatorio_insights(df)
 
             imagem_bytes = None
-            if incluir_grafico and "ultimo_grafico_fig" in st.session_state:
-                imagem_bytes = fig_to_bytes(st.session_state["ultimo_grafico_fig"])
+
+            if incluir_grafico:
+                df = carregar_dados()
+                fig = GRAFICOS_DISPONIVEIS[grafico_escolhido](df)
+                imagem_bytes = fig_to_bytes(fig)
 
         # --- Enviar o e-mail --- #
             remetente = st.secrets['REMETENTE']
